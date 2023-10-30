@@ -1,0 +1,56 @@
+﻿@model Data_Access_Layer.Models.DTO.UserDTO
+@{
+    ViewData["Title"] = "Login";
+    var loginError = TempData["LoginError"] as string;
+    Layout = "~/Views/Shared/Login_Register.cshtml";
+}
+
+<style>
+    .required-symbol
+    {
+        color: red;
+    }
+</style>
+
+<div class="container">
+    <div class="row justify-content-center" style="margin: 100px;">
+        <div class="col-md-4">
+            <h1 class="text-center">Login</h1>
+
+            <form asp-action="Login">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                </br>
+                <div class="form-group">
+                    <label asp-for="Username" class="control-label">Username<span class="required-symbol">*</span></label>
+                    <input asp-for="Username" class="form-control" />
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                </div>
+                <br/>
+                <div class="form-group">
+                    <label asp-for="Password" class="control-label">Password<span class="required-symbol">*</span></label>
+                    <input asp-for="Password" type="password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <br/>
+                <div class="form-group text-center">
+                    <button type="submit" class="btn btn-primary">Login</button>
+                    <a asp-controller="Auth" asp-action="Register" class="btn btn-secondary">New User</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(loginError))
+{
+    <script>
+        var error = @Html.Raw(Json.Serialize(loginError));
+        alert(error);
+    </script>
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

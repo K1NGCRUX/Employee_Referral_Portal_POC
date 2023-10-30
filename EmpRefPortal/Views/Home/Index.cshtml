@@ -1,0 +1,11 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+
+    var username = Context.Request.Cookies["Username"];
+    var userRole = Context.Request.Cookies["UserRole"];
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome @username</h1>
+    <h3>Your Role: @userRole</h3>
+</div>

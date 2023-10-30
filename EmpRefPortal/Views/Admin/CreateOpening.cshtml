@@ -1,0 +1,75 @@
+﻿@model EmpRefPortal.Models.OpeningDTO
+
+@{
+    ViewData["Title"] = "CreateOpening";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var badreq = TempData["createBadReq"] as string;
+    var conflict = TempData["createConflict"] as string;
+}
+
+<style>
+    .required-symbol {
+        color: red; /* Set the color to red */
+    }
+</style>
+
+@if(!string.IsNullOrEmpty(badreq))
+{
+    <script>
+        var badError = @Html.Raw(Json.Serialize(badreq));
+        alert(badError);
+    </script>
+}
+
+@if(!string.IsNullOrEmpty(conflict))
+{
+    <script>
+        var conError = @Html.Raw(Json.Serialize(conflict));
+        alert(conError);
+    </script>
+}
+
+<h1>Create Opening</h1>
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CreateOpening">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="RoleName" class="control-label">Role <span class="required-symbol">*</span></label>
+                <input asp-for="RoleName" class="form-control" />
+                <span asp-validation-for="RoleName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RoleLocation" class="control-label">
+                    Location <span class="required-symbol">*</span>
+                </label>
+                <input asp-for="RoleLocation" class="form-control" />
+                <span asp-validation-for="RoleLocation" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MinExp" class="control-label">Minimum Experience <span class="required-symbol">*</span></label>
+                <input asp-for="MinExp" class="form-control" />
+                <span asp-validation-for="MinExp" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Availability" class="control-label">Availability <span class="required-symbol">*</span></label>
+                <input asp-for="Availability" class="form-control" />
+                <span asp-validation-for="Availability" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label">Description <span class="required-symbol">*</span></label>
+                <textarea asp-for="Description" class="form-control" rows="4" cols="50" placeholder="Enter the Description Here"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <br/>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary"/>
+                <a asp-controller="Admin" asp-action="AdminOpenings" class="btn btn-secondary">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

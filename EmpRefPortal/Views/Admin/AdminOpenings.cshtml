@@ -1,0 +1,156 @@
+﻿@model IEnumerable<EmpRefPortal.Models.OpeningDTO>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+@{
+    ViewData["Title"] = "Index";
+    var create = TempData["created"] as string;
+    var edit = TempData["edited"] as string;
+    var delete = TempData["deleted"] as string;
+}
+
+<style>
+    /* Style for the popup */
+    .popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 400px;
+        background-color: #fff;
+        border: 1px solid black;
+        border-radius: 10px;
+        padding: 20px;
+        z-index: 1000;
+    }
+    .popup-close
+    {
+        border: 1px solid black;
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        $(".more-button").click(function () {
+            var description = $(this).data("description");
+            $("#popup-description").text(description);
+            $(".popup").show();
+        });
+
+        $(".popup-close").click(function () {
+            $(".popup").hide();
+        });
+    });
+</script>
+
+@if(!string.IsNullOrEmpty(create))
+{
+    <script>
+        var createResponse = @Html.Raw(Json.Serialize(create));
+        alert(createResponse);
+    </script>
+}
+
+@if(!string.IsNullOrEmpty(edit))
+{
+    <script>
+        var editResponse = @Html.Raw(Json.Serialize(edit));
+        alert(editResponse);
+    </script>
+}
+
+@if (!string.IsNullOrEmpty(delete))
+{
+    <script>
+        var editResponse = @Html.Raw(Json.Serialize(delete));
+        alert(editResponse);
+    </script>
+}
+
+@if (Model != null)
+{
+    <h1>Openings</h1>
+
+    <p>
+        <a asp-controller="Admin" asp-action="CreateOpening" class="btn btn-primary">Create New</a>
+    </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Sl. No
+                </th>
+                <th>
+                    Role Name
+                </th>
+                <th>
+                    Role Location
+                </th>
+                <th>
+                    Minimum Experience
+                </th>
+                <th>
+                    Availability
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RoleName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RoleLocation)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.MinExp)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Availability)
+                    </td>
+                    <td>
+                        <button class="more-button btn btn-info"
+                                data-description="@item.Description">
+                            More
+                        </button>
+                        <a asp-controller="Admin" asp-action="EditOpening" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a>
+                        <a href="javascript:void(0);" onclick="confirmDelete(@item.Id)" class="delete-button btn btn-danger">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="popup">
+        <button class="popup-close">Close</button>
+        <h3>
+            <strong>Description: </strong>
+        </h3>
+        <span id="popup-description"></span>
+    </div>
+}
+else
+{
+    <h2 style="color: red;">You are not authorized to view this, please Logout</h2>
+    <a asp-controller="HR" asp-action="ViewReferrals" class="btn btn-primary">View Referrals</a>
+}
+
+@section Scripts {
+    <script>
+        // Function to show a confirmation dialog
+        function confirmDelete(id) {
+            if (confirm("Are you sure you want to delete this item?")) {
+                window.location.href = `/Admin/DeleteOpening?id=${id}`;
+            }
+        }
+        $("#createButton").click(function () {
+            $(".popup").show();
+        });
+    </script>
+}

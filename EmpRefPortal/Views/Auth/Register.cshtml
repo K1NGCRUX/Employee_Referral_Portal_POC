@@ -1,0 +1,93 @@
+﻿@model Data_Access_Layer.Models.DTO.UserDTO
+@{
+    ViewData["Title"] = "Register";
+    Layout = "~/Views/Shared/Login_Register.cshtml";
+    var registerError = TempData["RegisterError"] as string;
+}
+
+<style>
+    .required-symbol{
+        color: red;
+    }
+</style>
+
+@if (!string.IsNullOrEmpty(registerError))
+{
+    <script>
+        // JavaScript code to display an alert
+        var error = @Html.Raw(Json.Serialize(registerError));
+        alert(error);
+    </script>
+}
+
+<div class="container">
+    <div class="row justify-content-center" style="margin: 100px;">
+        <div class="col-md-4">
+            <h1 class="text-center">Register</h1>
+            <form asp-action="Register">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <br />
+                <div class="form-group">
+                    <label asp-for="Username" class="control-label">Username<span class="required-symbol">*</span></label>
+                    <input asp-for="Username" class="form-control" />
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                </div>
+                <br />
+                <div class="form-group">
+                    <label asp-for="Password" class="control-label">Password<span class="required-symbol">*</span></label>
+                    <input asp-for="Password" type="password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <br />
+                <div class="form-group">
+                    <label for="ConfirmPassword" class="control-label">Confirm Password<span class="required-symbol">*</span></label>
+                    <input type="password" id="ConfirmPassword" class="form-control" />
+                    <span id="passwordMatchError" class="text-danger"></span>
+                </div>
+                <br />
+                <div class="form-group">
+                    <label asp-for="Role" class="control-label">Role<span class="required-symbol">*</span></label>
+                    <select asp-for="Role" class="form-control">
+                        <option value="">Select Role</option>
+                        <option value="HR">HR</option>
+                        <option value="User">User</option>
+                    </select>
+                    <span asp-validation-for="Role" class="text-danger"></span>
+                </div>
+                <br />
+                <div class="form-group text-center">
+                    <button type="submit" class="btn btn-primary">Register</button>
+                    <a asp-controller="Auth" asp-action="Login" class="btn btn-secondary">Back to Login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            var passwordField = $("#Password");
+            var confirmPasswordField = $("#ConfirmPassword");
+            var passwordMatchError = $("#passwordMatchError");
+
+            // Check if passwords match when either field changes
+            passwordField.on("change", checkPasswordsMatch);
+            confirmPasswordField.on("change", checkPasswordsMatch);
+
+            function checkPasswordsMatch() {
+                var password = passwordField.val();
+                var confirmPassword = confirmPasswordField.val();
+
+                if (password !== confirmPassword) {
+                    passwordMatchError.text("Passwords do not match");
+                } else {
+                    passwordMatchError.text(""); // Clear any previous error message
+                }
+            }
+        });
+    </script>
+}
