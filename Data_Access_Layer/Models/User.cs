@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -15,5 +16,6 @@ namespace Data_Access_Layer.Models
         public byte[] PasswordHash { get; set; }    
         public byte[] PasswordSalt { get; set; }
         public string Role { get; set; } = string.Empty;
+        public string AppliedRoles { get; set; } = "[]";
     }
 }

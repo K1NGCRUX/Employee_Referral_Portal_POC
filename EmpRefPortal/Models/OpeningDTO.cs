@@ -11,5 +11,6 @@ namespace EmpRefPortal.Models
         public string MinExp { get; set; }
         public int Availability { get; set; }
         public string Description { get; set; }
+        public string? Applied { get; set; }
     }
 }

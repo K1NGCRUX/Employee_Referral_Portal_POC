@@ -5,6 +5,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     var BadReq = TempData["createBadReq"] as string;
     var Conflict = TempData["createConflict"] as string;
+    var username = Context.Request.Cookies["Username"];
+    var userRole = Context.Request.Cookies["UserRole"];
+    var appliedRole = TempData["Rolename"];
 }
 
 <style>
@@ -37,8 +40,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="ForRole" class="control-label">For Role<span class="required-symbol">*</span></label>
-                <input asp-for="ForRole" class="form-control"/>
-                <span asp-validation-for="ForRole" class="text-danger"></span>
+                <input asp-for="ForRole" class="form-control" readonly value="@appliedRole" />
             </div>
             <div class="form-group">
                 <label asp-for="CandidateName" class="control-label">Candidate Name<span class="required-symbol">*</span></label>
@@ -52,18 +54,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="RefEmployee" class="control-label">Referred By<span class="required-symbol">*</span></label>
-                <input asp-for="RefEmployee" class="form-control" />
-                <span asp-validation-for="RefEmployee" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Status" class="control-label">Status<span class="required-symbol">*</span></label>
-                <input asp-for="Status" class="form-control" />
-                <span asp-validation-for="Status" class="text-danger"></span>
+                <input asp-for="RefEmployee" class="form-control" readonly value="@username"/>
             </div>
             <br/>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" onclick="create()"/>
-                <a asp-action="ViewReferrals" class="btn btn-secondary">Back to List</a>
+                <input type="submit" value="Create" class="btn btn-primary"/>
+                <a asp-controller="Admin" asp-action="AdminOpenings" class="btn btn-secondary">Back to List</a>
             </div>
         </form>
     </div>

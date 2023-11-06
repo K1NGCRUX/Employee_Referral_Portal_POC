@@ -4,6 +4,7 @@
     ViewData["Title"] = "EditReferral";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var BadReq = TempData["editBadReq"] as string;
+    var sereredit = TempData["ServerEdit"] as string;
 }
 
 <style>
@@ -11,6 +12,14 @@
         color:red;
     }
 </style>
+
+@if (!string.IsNullOrEmpty(sereredit))
+{
+    <script>
+        var error = @Html.Raw(Json.Serialize(sereredit));
+        alert(error);
+    </script>
+}
 
 @if(!string.IsNullOrEmpty(BadReq))
 {
@@ -46,14 +55,9 @@
                 <input asp-for="RefEmployee" class="form-control" />
                 <span asp-validation-for="RefEmployee" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Status" class="control-label">Status<span class="required-symbol">*</span></label>
-                <input asp-for="Status" class="form-control" />
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
             <br/>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" onclick="edit()"/>
+                <input type="submit" value="Update" class="btn btn-primary" onclick="edit()"/>
                 <a asp-action="ViewReferrals" class="btn btn-secondary">Back to List</a>
             </div>
         </form>

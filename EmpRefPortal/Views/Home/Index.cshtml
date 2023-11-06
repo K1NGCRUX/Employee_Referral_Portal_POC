@@ -3,8 +3,42 @@
 
     var username = Context.Request.Cookies["Username"];
     var userRole = Context.Request.Cookies["UserRole"];
+    var success = TempData["Success"] as string;
+    var Getrefbad = TempData["BadReq"] as string;
+    var Getrefserver = TempData["Server"] as string;
+    var LogoutError = TempData["ErrorLogout"] as string;
 }
 
+@if (!string.IsNullOrEmpty(LogoutError))
+{
+    <script>
+        var error = @Html.Raw(Json.Serialize(LogoutError));
+        alert(error);
+    </script>
+}
+
+@if (!string.IsNullOrEmpty(success))
+{
+    <script>
+        var error = @Html.Raw(Json.Serialize(success));
+        alert(error);
+    </script>
+}
+
+@if (!string.IsNullOrEmpty(Getrefbad))
+{
+    <script>
+        var error = @Html.Raw(Json.Serialize(Getrefbad));
+        alert(error);
+    </script>
+}
+@if (!string.IsNullOrEmpty(Getrefserver))
+{
+    <script>
+        var error = @Html.Raw(Json.Serialize(Getrefserver));
+        alert(error);
+    </script>
+}
 <div class="text-center">
     <h1 class="display-4">Welcome @username</h1>
     <h3>Your Role: @userRole</h3>

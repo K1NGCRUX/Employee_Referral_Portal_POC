@@ -1,11 +1,15 @@
 ﻿@model IEnumerable<EmpRefPortal.Models.OpeningDTO>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+
 @{
     ViewData["Title"] = "Index";
     var create = TempData["created"] as string;
     var edit = TempData["edited"] as string;
     var delete = TempData["deleted"] as string;
+    var userRole = Context.Request.Cookies["UserRole"];
+    var server = TempData["Server"] as string;
+    var delError = TempData["deleteError"] as string;
 }
 
 <style>
@@ -23,9 +27,34 @@
         padding: 20px;
         z-index: 1000;
     }
-    .popup-close
-    {
+
+    .popup-close {
         border: 1px solid black;
+    }
+
+    .popup-details {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 400px;
+        background-color: #fff;
+        border: 1px solid black;
+        border-radius: 10px;
+        padding: 20px;
+        z-index: 1000;
+    }
+
+    .popup-close-details {
+        border: 1px solid black;
+    }
+
+    a {
+        text-decoration: none;
+        color: black;
+        background-color: transparent;
+        cursor: pointer;
     }
 </style>
 
@@ -40,10 +69,22 @@
         $(".popup-close").click(function () {
             $(".popup").hide();
         });
+
+        $(document).ready(function () {
+            $(".details-button").click(function () {
+                var applied = $(this).data("applied");
+                $("#popup-details").text("Applied Users: " + applied);
+                $(".popup-details").show();
+            });
+
+            $(".popup-close-details").click(function () {
+                $(".popup-details").hide();
+            });
+        });
     });
 </script>
 
-@if(!string.IsNullOrEmpty(create))
+@if (!string.IsNullOrEmpty(create))
 {
     <script>
         var createResponse = @Html.Raw(Json.Serialize(create));
@@ -51,7 +92,7 @@
     </script>
 }
 
-@if(!string.IsNullOrEmpty(edit))
+@if (!string.IsNullOrEmpty(edit))
 {
     <script>
         var editResponse = @Html.Raw(Json.Serialize(edit));
@@ -67,13 +108,32 @@
     </script>
 }
 
+@if (!string.IsNullOrEmpty(server))
+{
+    <script>
+        var error = @Html.Raw(Json.Serialize(server));
+        alert(error);
+    </script>
+}
+
+@if (!string.IsNullOrEmpty(delError))
+{
+    <script>
+        var Delresponse = @Html.Raw(Json.Serialize(delError));
+        alert(Delresponse);
+    </script>
+}
+
 @if (Model != null)
 {
     <h1>Openings</h1>
 
-    <p>
-        <a asp-controller="Admin" asp-action="CreateOpening" class="btn btn-primary">Create New</a>
-    </p>
+    @if (userRole == "HR")
+    {
+        <p>
+            <a asp-controller="Admin" asp-action="CreateOpening" class="btn btn-primary">Create New</a>
+        </p>
+    }
     <table class="table">
         <thead>
             <tr>
@@ -114,13 +174,28 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.Availability)
                     </td>
-                    <td>
-                        <button class="more-button btn btn-info"
-                                data-description="@item.Description">
-                            More
-                        </button>
-                        <a asp-controller="Admin" asp-action="EditOpening" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a>
-                        <a href="javascript:void(0);" onclick="confirmDelete(@item.Id)" class="delete-button btn btn-danger">Delete</a>
+                    <td>   
+                        @if (userRole == "HR")
+                        {
+                            <a class="details-button"
+                                    data-applied="@item.Applied" style="padding-right:20px;">
+                                <img src="data:image/png;base64,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" width="20"/>
+                            </a>
+                            <button class="more-button btn btn-info"
+                                    data-description="@item.Description">
+                                Details
+                            </button>
+                            <a asp-controller="Admin" asp-action="EditOpening" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a>
+                            <a href="/Admin/DeleteOpening?id=@item.Id" onclick="return confirm('Are you sure you want to delete this item?');" class="delete-button btn btn-danger">Delete</a>
+                        }
+                        else
+                        {
+                            <button class="more-button btn btn-info"
+                                    data-description="@item.Description">
+                                Details
+                            </button>
+                            <a asp-controller="HR" asp-action="CreateReferral" class="btn btn-success" asp-route-role="@item.RoleName">Apply</a>
+                        }
                     </td>
                 </tr>
             }
@@ -128,29 +203,20 @@
     </table>
 
     <div class="popup">
-        <button class="popup-close">Close</button>
+        <button class="popup-close">X</button>
         <h3>
             <strong>Description: </strong>
         </h3>
         <span id="popup-description"></span>
+    </div>
+
+    <div class="popup-details">
+        <button class="popup-close-details">X</button>
+        <span id="popup-details"></span>
     </div>
 }
 else
 {
     <h2 style="color: red;">You are not authorized to view this, please Logout</h2>
     <a asp-controller="HR" asp-action="ViewReferrals" class="btn btn-primary">View Referrals</a>
-}
-
-@section Scripts {
-    <script>
-        // Function to show a confirmation dialog
-        function confirmDelete(id) {
-            if (confirm("Are you sure you want to delete this item?")) {
-                window.location.href = `/Admin/DeleteOpening?id=${id}`;
-            }
-        }
-        $("#createButton").click(function () {
-            $(".popup").show();
-        });
-    </script>
 }

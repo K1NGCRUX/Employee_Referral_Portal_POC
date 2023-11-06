@@ -2,6 +2,8 @@
 @{
     ViewData["Title"] = "Register";
     Layout = "~/Views/Shared/Login_Register.cshtml";
+    var success = TempData["Success"] as string;
+    var servererror = TempData["ServerError"] as string;
     var registerError = TempData["RegisterError"] as string;
 }
 
@@ -11,11 +13,26 @@
     }
 </style>
 
+@if (!string.IsNullOrEmpty(success))
+{
+    <script>
+        var error = @Html.Raw(Json.Serialize(success));
+        alert(error);
+    </script>
+}
+
 @if (!string.IsNullOrEmpty(registerError))
 {
     <script>
-        // JavaScript code to display an alert
         var error = @Html.Raw(Json.Serialize(registerError));
+        alert(error);
+    </script>
+}
+
+@if (!string.IsNullOrEmpty(servererror))
+{
+    <script>
+        var error = @Html.Raw(Json.Serialize(servererror));
         alert(error);
     </script>
 }

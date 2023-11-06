@@ -3,6 +3,7 @@ using Data_Access_Layer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data_Access_Layer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231031131837_AddArrayInsteadofList")]
+    partial class AddArrayInsteadofList
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,10 +31,6 @@ namespace Data_Access_Layer.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Applied")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Availability")
                         .HasColumnType("int");
@@ -55,6 +54,35 @@ namespace Data_Access_Layer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Openings");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 27,
+                            Availability = 10,
+                            Description = "We are looking for a highly skilled Software Engineer to join our team. You will be responsible for designing, coding, and testing software applications. You should have a strong background in software development and be proficient in various programming languages.",
+                            MinExp = "3 years",
+                            RoleLocation = "New York",
+                            RoleName = "Software Engineer"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            Availability = 7,
+                            Description = "As a Data Scientist, you will play a key role in analyzing large datasets to provide valuable insights. You should have a deep understanding of data analysis, statistical modeling, and machine learning. Join our team to work on exciting data projects.",
+                            MinExp = "5 years",
+                            RoleLocation = "San Francisco",
+                            RoleName = "Data Scientist"
+                        },
+                        new
+                        {
+                            Id = 29,
+                            Availability = 15,
+                            Description = "We are seeking a creative Web Designer to work on designing and developing user-friendly websites. You will be responsible for creating visually appealing and user-friendly web interfaces. Join us to bring innovative design ideas to life.",
+                            MinExp = "2 years",
+                            RoleLocation = "Los Angeles",
+                            RoleName = "Web Designer"
+                        });
                 });
 
             modelBuilder.Entity("Data_Access_Layer.Models.DTO.ReferralDTO", b =>

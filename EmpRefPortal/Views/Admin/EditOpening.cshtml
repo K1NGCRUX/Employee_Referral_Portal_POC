@@ -5,6 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     var BadReq = TempData["editBadReq"] as string;
     var Conflict = TempData["editConflict"] as string;
+    var server = TempData["editError"] as string;
 }
 
 <style>
@@ -25,6 +26,14 @@
 {
     <script>
         var error = @Html.Raw(Json.Serialize(Conflict));
+        alert(error);
+    </script>
+}
+
+@if (!string.IsNullOrEmpty(server))
+{
+    <script>
+        var error = @Html.Raw(Json.Serialize(server));
         alert(error);
     </script>
 }
@@ -60,6 +69,11 @@
                 <label asp-for="Description" class="control-label">Description<span class="required-symbol">*</span></label>
                 <textarea asp-for="Description" class="form-control" rows="4" cols="50" placeholder="Enter the Description Here"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Applied" class="control-label" type">Applied Users<span class="required-symbol">*</span></label>
+                <input asp-for="Applied" class="form-control"></input>
+                <span asp-validation-for="Applied" class="text-danger"></span>
             </div>
             <br />
             <div class="form-group">

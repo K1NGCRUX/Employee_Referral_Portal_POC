@@ -47,7 +47,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Business_Logic_Layer\Business_Logic_Layer.csproj" />
     <ProjectReference Include="..\Data_Access_Layer\Data_Access_Layer.csproj" />
   </ItemGroup>
 

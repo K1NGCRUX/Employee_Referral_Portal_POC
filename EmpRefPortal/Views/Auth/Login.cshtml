@@ -1,8 +1,11 @@
 ﻿@model Data_Access_Layer.Models.DTO.UserDTO
 @{
     ViewData["Title"] = "Login";
-    var loginError = TempData["LoginError"] as string;
     Layout = "~/Views/Shared/Login_Register.cshtml";
+    var loginerror = TempData["LoginError"] as string;
+    var wrongpass = TempData["WrongPass"] as string;
+    var serverissue = TempData["ServerIssue"] as string;
+    var logoutSuccess = TempData["Logout"] as string;
 }
 
 <style>
@@ -11,6 +14,38 @@
         color: red;
     }
 </style>
+
+@if (!string.IsNullOrEmpty(logoutSuccess))
+{
+    <script>
+        var error = @Html.Raw(Json.Serialize(logoutSuccess));
+        alert(error);
+    </script>
+}
+
+@if (!string.IsNullOrEmpty(loginerror))
+{
+    <script>
+        var error = @Html.Raw(Json.Serialize(loginerror));
+        alert(error);
+    </script>
+}
+
+@if (!string.IsNullOrEmpty(wrongpass))
+{
+    <script>
+        var error = @Html.Raw(Json.Serialize(wrongpass));
+        alert(error);
+    </script>
+}
+
+@if (!string.IsNullOrEmpty(serverissue))
+{
+    <script>
+        var error = @Html.Raw(Json.Serialize(serverissue));
+        alert(error);
+    </script>
+}
 
 <div class="container">
     <div class="row justify-content-center" style="margin: 100px;">
@@ -40,14 +75,6 @@
         </div>
     </div>
 </div>
-
-@if (!string.IsNullOrEmpty(loginError))
-{
-    <script>
-        var error = @Html.Raw(Json.Serialize(loginError));
-        alert(error);
-    </script>
-}
 
 @section Scripts {
     @{

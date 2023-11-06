@@ -1,4 +1,5 @@
 using Data_Access_Layer.Data;
+using Business_Logic_Layer.Configuations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -43,6 +44,9 @@ builder.Services.AddScoped<Data_Access_Layer.AdminDataLayer>();
 
 builder.Services.AddScoped<Data_Access_Layer.HRDataLayer>();
 
+builder.Services.AddScoped<Data_Access_Layer.AuthDataLayer>();
+
+
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
     {
         option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -63,6 +67,8 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.AddGlobalErrorHandeling();
 
 app.MapControllers();
 

@@ -10,7 +10,6 @@ namespace Data_Access_Layer.Models
 {
     public class Opening
     {
-        [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
@@ -28,5 +27,7 @@ namespace Data_Access_Layer.Models
 
         [Required]
         public string Description { get; set; }
+
+        public string Applied { get; set; }
     }
 }

@@ -1,87 +1,68 @@
-﻿using Data_Access_Layer;
+﻿using Business_Logic_Layer.Exceptions;
+using Data_Access_Layer;
 using Data_Access_Layer.Models.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 
 namespace EmpRefPortalAPI.Controllers
 {
-
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize(Roles = "HR")]
     public class AdminController : Controller
     {
         private readonly AdminDataLayer _dal;
 
+        //Introducing the Data_Access_Layer to the variable
         public AdminController(AdminDataLayer adminDataLayer)
         {
             _dal = adminDataLayer;
         }
 
-        //Respones Cotroller
-
+        //Method to get Openings
         [HttpGet(Name = "AdminGetOpenings")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IEnumerable<OpeningDTO> GetOpenings()
         {
-            return _dal.GetOpenings();
+            return _dal.GetOpenings(); //Redirceting to the data layer using _dal
         }
 
+        //Getting a particular Id opening
         [HttpGet("{id:int}", Name = "AdminGetOpening")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize(Roles = "HR")] //Using Role based authenticaion, the claim will have the role, based on that will allow to view or not
         public ActionResult<OpeningDTO> GetOpening(int id)
         {
-            return _dal.GetOpening(id);
+            try
+            {
+                return _dal.GetOpening(id);
+            }
+            catch
+            {
+                throw new ForbiddenException("");
+            }
         }
 
-        [HttpPost(Name = "AdminCreateOpening")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        //Creating a new opening based on the use   r entry
+        [HttpPost]
+        [Authorize(Roles = "HR")]
         public ActionResult<OpeningDTO> CreateOpening(OpeningDTO opening)
         {
-            if (opening == null)
-            {
-                return BadRequest();
-            }
-            var v = _dal.CreateOpening(opening);
-            if(v == null)
-            {
-                return Conflict();
-            }
-            return v;
+            return _dal.CreateOpening(opening);
         }
 
+
+        //Editing existing data based on user entry
         [HttpPost(Name = "AdminEditOpening")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize(Roles = "HR")]
         public ActionResult<OpeningDTO> EditOpening(OpeningDTO opening)
         {
-            if (opening == null)
-            {
-                return BadRequest();
-            }
-            var v = _dal.EditOpening(opening);
-            return v;
+            return _dal.EditOpening(opening);
         }
+
+        //Delets opening based on the user's selection
         [HttpDelete("{id:int}", Name = "Delete Opening")]
-            [ProducesResponseType(StatusCodes.Status200OK)]
-            [ProducesResponseType(StatusCodes.Status400BadRequest)]
-            [ProducesResponseType(StatusCodes.Status404NotFound)]
-            [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-            public ActionResult<OpeningDTO> DeleteOpening(int id)
-            {
-                return _dal.DeleteOpening(id);
-            }
+        [Authorize(Roles = "HR")]
+        public ActionResult<OpeningDTO> DeleteOpening(int id)
+        {
+            return _dal.DeleteOpening(id);
         }
     }
+}

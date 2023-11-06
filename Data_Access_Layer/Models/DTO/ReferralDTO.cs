@@ -25,8 +25,5 @@ namespace Data_Access_Layer.Models.DTO
 
         [Required]
         public string RefEmployee { get; set; }
-
-        [Required]
-        public string Status { get; set; }
     }
 }

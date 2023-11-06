@@ -8,6 +8,8 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Identity;
 using Data_Access_Layer.Data;
 using Microsoft.EntityFrameworkCore;
+using Data_Access_Layer;
+using Business_Logic_Layer.Exceptions;
 
 namespace EmpRefPortalAPI.Controllers
 {
@@ -18,75 +20,33 @@ namespace EmpRefPortalAPI.Controllers
         public static User user = new User();
         private readonly ApplicationDbContext _db;
         private readonly IConfiguration _configuration;
+        private readonly AuthDataLayer _dal;
 
-        public AuthController(ApplicationDbContext db, IConfiguration configuration)
+        public AuthController(ApplicationDbContext db, IConfiguration configuration, AuthDataLayer authDataLayer)
         {
             _db = db;
+            _dal = authDataLayer;
             _configuration = configuration;
         }
 
         [HttpPost("Register")]
-        public async Task<ActionResult<User>> Register(UserDTO request)
+        public Task<ActionResult<User>> Register(UserDTO request)
         {
-            if (request == null)
-            {
-                return BadRequest("There is no data");
-            }
-
-            if (_db == null)
-            {
-                return BadRequest("There is no database");
-            }
-
-            var us = _db.Users.FirstOrDefault(u => u.Username == request.Username);
-
-            if (us != null) 
-            {
-                return StatusCode(409, "User already exists");
-            }
-
-            var user = new User();
-
-            CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
-
-            user.Username = request.Username;
-            user.PasswordSalt = passwordSalt; //Can i create a random password salt and then just use it for all 
-            user.PasswordHash = passwordHash;
-            user.Role = request.Role;
-
-            _db.Add(user);
-            _db.SaveChanges();
-
-            return null;
+            return _dal.Register(request);
         }
 
         [HttpPost("Login")]
-        public async Task<ActionResult<string>> Login(UserDTO request)
+        public async Task<IActionResult> Login(UserDTO request)
         {
-            var user = await _db.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
-
-            if (user == null)
-            {
-                return BadRequest("User not found");
-            }
+            var user = await _dal.FindUserByUsernameAsync(request);
 
             if (!VerifyPaswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
             {
-                return BadRequest("Wrong Password");
+                throw new BadRequestException("Password Incorrec, please try again");
             }
-
-            string Token = CreateToken(user);         
-            return Token;
-        }
-
-
-        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-        {
-            using (var hmac = new HMACSHA512())
-            {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-            }
+            
+            string token = CreateToken(user);
+            return Ok(token);
         }
 
         private bool VerifyPaswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
@@ -100,7 +60,6 @@ namespace EmpRefPortalAPI.Controllers
 
         private string CreateToken(User user)
         {
-
             var claims = new List<Claim>
                 {
                 new Claim(ClaimTypes.Name, user.Username),
@@ -118,10 +77,8 @@ namespace EmpRefPortalAPI.Controllers
                 );
 
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-
             return jwt;
         }
-
         //Claims -> describes about the user, within a token
     }
 }

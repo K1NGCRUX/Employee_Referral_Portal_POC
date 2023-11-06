@@ -4,9 +4,16 @@
 @{
     ViewData["Title"] = "ViewReferrals";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var username = Context.Request.Cookies["Username"];
     var create = TempData["created"] as string;
     var edit = TempData["edited"] as string;
     var delete = TempData["deleted"] as string;
+    var notfoundedit = TempData["NotFoundEdit"] as string;
+    var notfoundafter = TempData["NotFoundAfter"] as string;
+    var serverafteredit = TempData["AfterEdit"] as string;
+    var IdDelete = TempData["Idnull"] as string;
+    var notfound = TempData["NotFound"] as string;
+    var error = TempData["error"] as string;
 }
 
 <script>
@@ -23,6 +30,53 @@
         });
     });
 </script>
+
+@if (!string.IsNullOrEmpty(error))
+{
+    <script>
+        var response = @Html.Raw(Json.Serialize(error));
+        alert(response);
+    </script>
+}
+@if (!string.IsNullOrEmpty(notfound))
+{
+    <script>
+        var response = @Html.Raw(Json.Serialize(notfound));
+        alert(response);
+    </script>
+}
+
+@if (!string.IsNullOrEmpty(IdDelete))
+{
+    <script>
+        var response = @Html.Raw(Json.Serialize(IdDelete));
+        alert(response);
+    </script>
+}
+
+@if (!string.IsNullOrEmpty(serverafteredit))
+{
+    <script>
+        var response = @Html.Raw(Json.Serialize(serverafteredit));
+        alert(response);
+    </script>
+}
+
+@if (!string.IsNullOrEmpty(notfoundafter))
+{
+    <script>
+        var response = @Html.Raw(Json.Serialize(notfoundafter));
+        alert(response);
+    </script>
+}
+
+@if (!string.IsNullOrEmpty(notfoundedit))
+{
+    <script>
+        var response = @Html.Raw(Json.Serialize(notfoundedit));
+        alert(response);
+    </script>
+}
 
 @if(!string.IsNullOrEmpty(create))
 {
@@ -51,10 +105,6 @@
 @if (Model != null) {
     <h1>Referrals</h1>
 
-    <p>
-        <a asp-controller="HR" asp-action="CreateReferral" class="btn btn-primary">Create New</a>
-    </p>
-
     <table class="table">
     <thead>
         <tr>
@@ -73,39 +123,36 @@
             <th>
                 Referred By
             </th>
-            <th>
-                Status 
-            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Id)
-                </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ForRole)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CandidateName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CandidateContact)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RefEmployee)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                <a asp-controller="HR" asp-action="EditReferral" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a>
-                <a href="@Url.Action("DeleteReferral", "HR", new { id = item.Id })" class="delete-button btn btn-danger">Delete</a>
-            </td>
-        </tr>
-}
+@foreach (var item in Model) 
+{
+    @if(item.RefEmployee == username)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Id)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ForRole)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CandidateName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CandidateContact)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.RefEmployee)
+                        </td>
+                        <td>
+                            <a asp-controller="HR" asp-action="EditReferral" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a>
+                            <a href="/HR/DeleteReferral?id=@item.Id" class="delete-button btn btn-danger">Delete</a>
+                    </tr>
+                }
+            }
     </tbody>
     </table>
 }
@@ -113,14 +160,4 @@ else
 {
     <h2 style="color: red;">You are not authorized to view this, please Logout</h2>
     <a asp-controller="Admin" asp-action="AdminOpenings" class="btn btn-primary">View Openings</a>
-}
-
-@section Scripts {
-    <script>
-        function confirmDelete(id) {
-            if (confirm("Are you sure you want to delete this item?")) {
-                window.location.href = `/Admin/DeleteOpening?id=${id}`;
-            }
-        }
-    </script>
 }

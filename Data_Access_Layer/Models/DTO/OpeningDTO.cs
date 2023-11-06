@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -10,7 +9,7 @@ namespace Data_Access_Layer.Models.DTO
 {
     public class OpeningDTO
     {
-        [Required]
+        [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
@@ -28,5 +27,7 @@ namespace Data_Access_Layer.Models.DTO
 
         [Required]
         public string Description { get; set; }
+
+        public string Applied {  get; set; }
     }
 }

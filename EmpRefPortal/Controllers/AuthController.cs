@@ -1,5 +1,4 @@
-﻿using Data_Access_Layer.Models;
-using Data_Access_Layer.Models.DTO;
+﻿using Data_Access_Layer.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
@@ -30,45 +29,26 @@ namespace EmpRefPortal.Controllers
         [HttpPost]
         public async Task<ActionResult> Register(UserDTO obj)
         {
-            if (obj == null)
-            {
-                ModelState.AddModelError("CustomError", "Please enter valid data");
-                // Pass the obj parameter to the view to maintain user input in case of errors.
-                return View("Register", obj);
-            }
-
             var content = new StringContent(JsonConvert.SerializeObject(obj), Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await _httpClient.PostAsync(_httpClient.BaseAddress + "/Auth/Register", content);
 
             if (response.IsSuccessStatusCode)
             {
+                TempData["Success"] = "Successfully Registered";
                 return RedirectToAction("Login");
             }
             else
             {
-                if (response.StatusCode == HttpStatusCode.BadRequest)
-                {
-                    ModelState.AddModelError("CustomError", "API returned a Bad Request.");
-                    // Pass the obj parameter to the view to maintain user input in case of errors.
-                    return View("Register", obj);
-                }
-                else if (response.StatusCode == HttpStatusCode.NotFound)
-                {
-                    // Handle 404 Not Found error
-                    ModelState.AddModelError("CustomError", "API resource not found.");
-                    // Pass the obj parameter to the view to maintain user input in case of errors.
-                    return View("Register", obj);
-                }
-                else if(response.StatusCode == HttpStatusCode.Conflict)
+                if (response.StatusCode == HttpStatusCode.Conflict)
                 {
                     TempData["RegisterError"] = "This username already exists";
                     return View(obj);
                 }
                 else
                 {
-                    // Handle other errors
-                    return View("Error");
+                    TempData["ServerError"] = "There seems to be an issue with the server";
+                    return View("Register", obj);
                 }
             }
         }
@@ -81,12 +61,6 @@ namespace EmpRefPortal.Controllers
         [HttpPost]
         public async Task<ActionResult> Login(UserDTO obj)
         {
-            if (obj == null)
-            {
-                ModelState.AddModelError("CustomError", "Please enter valid data");
-                return View("Login", obj);
-            }
-
             var content = new StringContent(JsonConvert.SerializeObject(obj), Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await _httpClient.PostAsync(_httpClient.BaseAddress + "/Auth/Login", content);
@@ -116,13 +90,23 @@ namespace EmpRefPortal.Controllers
                     Response.Cookies.Append("UserName", username, cookieOptions);
                     Response.Cookies.Append("UserRole", role, cookieOptions);
                 }
-
+                TempData["Success"] = "Login Successful";
                 return RedirectToAction("Index", "Home");
+            }
+            else if(response.StatusCode == HttpStatusCode.NotFound)
+            {
+                TempData["LoginError"] = "This user does not exist, please check username and password";
+                return View("Login", obj);
+            }
+            else if (response.StatusCode == HttpStatusCode.BadRequest) 
+            {
+                TempData["WrongPass"] = "Wrong Password";
+                return View(obj);
             }
             else
             {
-                TempData["LoginError"] = "Invalid username or password";
-                return View("Login", obj);
+                TempData["ServerIssue"] = "There seems to be an issue with the server";
+                return View(obj);
             }
         }
 
@@ -134,6 +118,7 @@ namespace EmpRefPortal.Controllers
             Response.Cookies.Delete("UserName");
             Response.Cookies.Delete("UserRole");
 
+            TempData["Logout"] = "Logout Successful";
             return RedirectToAction("Login");
         }
 

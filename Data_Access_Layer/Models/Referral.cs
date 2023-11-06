@@ -27,7 +27,6 @@ namespace Data_Access_Layer.Models
         [Required]
         public string RefEmployee { get; set; }
 
-        [Required]
-        public string Status { get; set; }
+        public string Applied { get; set; }
     }
 }
